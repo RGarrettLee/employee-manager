@@ -138,20 +138,17 @@ async function program(question) { // main function to loop through user options
                             }
                             db.query(`SELECT id FROM employee e WHERE CONCAT(e.first_name, ' ', e.last_name) = ?`, data.manager, (err, manager) => {
                                 db.query(`SELECT id FROM employee e WHERE CONCAT(e.first_name, ' ', e.last_name) = ?`, data.employee, (err, employee) => {
-                                    if (!isManager) {
-                                        db.query(`UPDATE employee SET manager_id = ? WHERE id = ?`, [null, employee[0].id], (err, result) => {
-                                            console.log('Employee successfully updated');
-                                            return program(question);
-                                        });
-                                    } else {
-                                        db.query(`UPDATE employee SET manager_id = ? WHERE id = ?`, [manager[0].id, employee[0].id], (err, result) => {
-                                            console.log('Employee successfully updated');
-                                            return program(question);
-                                        })
+                                    let params = [null, employee[0].id];
+                                    if (isManager) {
+                                        params = [manager[0].id, employee[0].id];
                                     }
-                                })
-                            })
-                        })
+                                    db.query(`UPDATE employee SET manager_id = ? WHERE id = ?`, params, (err, result) => {
+                                        console.log('Employee successfully updated');
+                                        return program(question);
+                                    })
+                                });
+                            });
+                        });
                     } catch (err) {
                         console.log(errorMessage);
                         return program(question);
