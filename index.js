@@ -65,7 +65,9 @@ async function program(question) { // main function to loop through user options
                             }
                         ])
                         .then((data) => {
+                            // searches for a role with a matching name in the database and grabs its id
                             db.query('SELECT id FROM role WHERE role.title = ?', data.roleName, (err, role) => {
+                                // searches for an employee with a matching first and last name combo and grabs their id
                                 db.query(`SELECT id FROM employee e WHERE CONCAT(e.first_name, ' ', e.last_name) = ?`, data.managerName, (err, manager) => {
                                     let m; // small bit of logic to allow for no manager on a new employee
                                     if (!manager[0]) m = null; 
@@ -98,13 +100,16 @@ async function program(question) { // main function to loop through user options
                             }
                         ])
                         .then((data) => {
+                            // searches for an employee with a first and last name combo in the database and grabs their id
                             db.query(`SELECT id FROM employee e WHERE CONCAT(e.first_name, ' ', e.last_name) = ?`, data.employee, (err, employee) => {
+                                // searches for a role with a matching name in the database and grabs its id
                                 db.query('SELECT id FROM role r WHERE r.title = ?', data.roleName, (err, result) => {
+                                    // updates employee with new role_id
                                     db.query('UPDATE employee SET role_id = ? WHERE id = ?', [result[0].id, employee[0].id], (err, res) => {
                                         console.log('Employee successfully updated');
                                         return program(question);
-                                    })
-                                })
+                                    });
+                                });
                             });
                         });
                     } catch (err) {
@@ -113,6 +118,7 @@ async function program(question) { // main function to loop through user options
                     }
                     break;
                 case 'View All Roles': // displays all roles in the database
+                    // takes department id from role table and gets the associated department name
                     db.query('SELECT *, r.id, d.name AS department FROM role r LEFT JOIN department d ON d.id = r.department_id', (err, result) => {
                         console.log('\n');
                         let t = new table;
@@ -148,7 +154,9 @@ async function program(question) { // main function to loop through user options
                             }
                         ])
                         .then((data) => {
+                            // searches for a department with a matching name and grabs its id
                             db.query(`SELECT id FROM department WHERE department.name = ?`, data.dept, (err, result) => {
+                                // creates a new role using the given input
                                 db.query(`INSERT INTO role(title, salary, department_id) VALUES(?, ?, ?);`, [data.roleName, data.salary, result[0].id], (err, resp) => {
                                     console.log('Role successfully added');
                                     return program(question);
@@ -184,6 +192,7 @@ async function program(question) { // main function to loop through user options
                             }
                         ])
                         .then((data) => {
+                            // creates a new department with the given input
                             db.query('INSERT INTO department (name) VALUES(?)', data.deptName, (err, result) => {
                                 console.log('Department successfully added');
                                 return program(question);
@@ -205,8 +214,10 @@ async function program(question) { // main function to loop through user options
 }
 
 function init() {
+    // all user choices
     let choices = ['View All Employees', 'Add Employee', 'Update Employee Role', 'View All Roles', 'Add Role', 'View All Departments', 'Add Department', 'Quit'];
 
+    // main loop function
     program([{ type: 'list', message: 'What would you like do?', choices: choices, name: 'choice' }]);
 }
 
