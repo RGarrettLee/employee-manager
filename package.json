@@ -1,0 +1,27 @@
+{
+  "name": "employee-manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RGarrettLee/employee-manager.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RGarrettLee/employee-manager/issues"
+  },
+  "homepage": "https://github.com/RGarrettLee/employee-manager#readme",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "easy-table": "^1.2.0",
+    "inquirer": "^8.2.4",
+    "mysql2": "^2.3.3"
+  }
+}
