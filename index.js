@@ -115,6 +115,48 @@ async function program(question) { // main function to loop through user options
                         return program(question);
                     }
                     break;
+                case 'Update Employee Manager': // allows you to update an employee's manager
+                    try {
+                        inquirer
+                        .prompt([
+                            {
+                                type: 'input',
+                                message: 'Which employee would you like to update? (first and last name)',
+                                name: 'employee'
+                            },
+                            {
+                                type: 'input',
+                                message: 'Who would you like to assign as a manager? (first and last name or leave blank to remove)',
+                                name: 'manager'
+                            }
+                        ])
+                        .then((data) => {
+                            let isManager = true; // checks to see if they want to enter a manager and if not set to null
+                            if (data.manager === '') {
+                                isManager = false;
+                                data.manager = 1;
+                            }
+                            db.query(`SELECT id FROM employee e WHERE CONCAT(e.first_name, ' ', e.last_name) = ?`, data.manager, (err, manager) => {
+                                db.query(`SELECT id FROM employee e WHERE CONCAT(e.first_name, ' ', e.last_name) = ?`, data.employee, (err, employee) => {
+                                    if (!isManager) {
+                                        db.query(`UPDATE employee SET manager_id = ? WHERE id = ?`, [null, employee[0].id], (err, result) => {
+                                            console.log('Employee successfully updated');
+                                            return program(question);
+                                        });
+                                    } else {
+                                        db.query(`UPDATE employee SET manager_id = ? WHERE id = ?`, [manager[0].id, employee[0].id], (err, result) => {
+                                            console.log('Employee successfully updated');
+                                            return program(question);
+                                        })
+                                    }
+                                })
+                            })
+                        })
+                    } catch (err) {
+                        console.log(errorMessage);
+                        return program(question);
+                    }
+                    break;
                 case 'View All Roles': // displays all roles in the database
                     // takes department id from role table and gets the associated department name
                     db.query('SELECT *, r.id, d.name AS department FROM role r LEFT JOIN department d ON d.id = r.department_id', (err, result) => {
@@ -211,7 +253,7 @@ async function program(question) { // main function to loop through user options
 
 function init() {
     // all user choices
-    let choices = ['View All Employees', 'Add Employee', 'Update Employee Role', 'View All Roles', 'Add Role', 'View All Departments', 'Add Department', 'Quit'];
+    let choices = ['View All Employees', 'Add Employee', 'Update Employee Role', 'Update Employee Manager', 'View All Roles', 'Add Role', 'View All Departments', 'Add Department', 'Quit'];
 
     console.log('Welcome to the Employee Management System\n\n')
 
