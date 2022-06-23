@@ -19,11 +19,9 @@ async function program(question) { // main function to loop through user options
     return inquirer
         .prompt(question)
         .then(response => {
-            console.log('\n\n\n\n');
             switch (response.choice) {
                 case 'View All Employees': // displays all employees in the database
                     db.query(`SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON d.id = r.department_id LEFT JOIN employee m ON m.id = e.manager_id`, (err, result) => {
-                        console.log('\n');
                         let t = new table;
                         result.forEach((employee) => {
                             t.cell('id', employee.id);
@@ -120,7 +118,6 @@ async function program(question) { // main function to loop through user options
                 case 'View All Roles': // displays all roles in the database
                     // takes department id from role table and gets the associated department name
                     db.query('SELECT *, r.id, d.name AS department FROM role r LEFT JOIN department d ON d.id = r.department_id', (err, result) => {
-                        console.log('\n');
                         let t = new table;
                         result.forEach((role) => {
                             t.cell('id', role.id);
@@ -170,7 +167,6 @@ async function program(question) { // main function to loop through user options
                     break;
                 case 'View All Departments': // displays all departments in the database
                     db.query('SELECT * FROM department', (err, result) => {
-                        console.log('\n');
                         let t = new table;
                         result.forEach((dept) => {
                             t.cell('id', dept.id);
@@ -216,6 +212,8 @@ async function program(question) { // main function to loop through user options
 function init() {
     // all user choices
     let choices = ['View All Employees', 'Add Employee', 'Update Employee Role', 'View All Roles', 'Add Role', 'View All Departments', 'Add Department', 'Quit'];
+
+    console.log('Welcome to the Employee Management ')
 
     // main loop function
     program([{ type: 'list', message: 'What would you like do?', choices: choices, name: 'choice' }]);
