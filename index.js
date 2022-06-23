@@ -67,7 +67,7 @@ async function program(question) { // main function to loop through user options
                         .then((data) => {
                             db.query('SELECT id FROM role WHERE role.title = ?', data.roleName, (err, role) => {
                                 db.query(`SELECT id FROM employee e WHERE CONCAT(e.first_name, ' ', e.last_name) = ?`, data.managerName, (err, manager) => {
-                                    let m;
+                                    let m; // small bit of logic to allow for no manager on a new employee
                                     if (!manager[0]) m = null; 
                                     else m = manager[0].id;
                                     db.query(`INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES(?, ?, ?, ?)`, [data.firstName, data.lastName, role[0].id, m], (err, result) => {
@@ -87,9 +87,26 @@ async function program(question) { // main function to loop through user options
                         inquirer
                         .prompt([
                             {
-                                
+                                type: 'input',
+                                message: 'Which employee\'s role do you want to change? (first and last name)',
+                                name: 'employee'
+                            },
+                            {
+                                type: 'input',
+                                message: 'What role would you like them to have?',
+                                name: 'roleName'
                             }
                         ])
+                        .then((data) => {
+                            db.query(`SELECT id FROM employee e WHERE CONCAT(e.first_name, ' ', e.last_name) = ?`, data.employee, (err, employee) => {
+                                db.query('SELECT id FROM role r WHERE r.title = ?', data.roleName, (err, result) => {
+                                    db.query('UPDATE employee SET role_id = ? WHERE id = ?', [result[0].id, employee[0].id], (err, res) => {
+                                        console.log('Employee successfully updated');
+                                        return program(question);
+                                    })
+                                })
+                            });
+                        });
                     } catch (err) {
                         console.log(errorMessage);
                         return program(question);
