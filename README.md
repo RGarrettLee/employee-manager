@@ -19,6 +19,11 @@ Table of Contents:
 npm i
 ```
 
+> *you will need to create a .env file with the following fields*
+- USER=root
+- PASSWORD=*your password*
+- DB_NAME=employee_db
+
 ## Usage
 
 ```
