@@ -136,12 +136,15 @@ async function program(question) { // main function to loop through user options
                                 isManager = false;
                                 data.manager = 1;
                             }
+                            // checks database for an employee with a matching first and last name and grabs their id
                             db.query(`SELECT id FROM employee e WHERE CONCAT(e.first_name, ' ', e.last_name) = ?`, data.manager, (err, manager) => {
+                                // repeat of above query but this time looking for the employee to update rather than the manager we want to put on them
                                 db.query(`SELECT id FROM employee e WHERE CONCAT(e.first_name, ' ', e.last_name) = ?`, data.employee, (err, employee) => {
-                                    let params = [null, employee[0].id];
+                                    let params = [null, employee[0].id]; // handles params based on whether the user wants a manager on an employee
                                     if (isManager) {
                                         params = [manager[0].id, employee[0].id];
                                     }
+                                    // update employee to have new manager
                                     db.query(`UPDATE employee SET manager_id = ? WHERE id = ?`, params, (err, result) => {
                                         console.log('Employee successfully updated');
                                         return program(question);
