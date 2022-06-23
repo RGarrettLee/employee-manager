@@ -12,7 +12,7 @@ const db = mysql.createConnection( // connect to the database
         password: process.env.PASSWORD,
         database: process.env.DB_NAME,
     },
-    console.log(`Connected to the ${process.env.DB_NAME} database`)
+    console.log(`Connected to the ${process.env.DB_NAME} database\n\n`)
 );
 
 async function program(question) { // main function to loop through user options
@@ -213,7 +213,7 @@ function init() {
     // all user choices
     let choices = ['View All Employees', 'Add Employee', 'Update Employee Role', 'View All Roles', 'Add Role', 'View All Departments', 'Add Department', 'Quit'];
 
-    console.log('Welcome to the Employee Management ')
+    console.log('Welcome to the Employee Management System\n\n')
 
     // main loop function
     program([{ type: 'list', message: 'What would you like do?', choices: choices, name: 'choice' }]);
